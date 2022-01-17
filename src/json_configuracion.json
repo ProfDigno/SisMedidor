@@ -1,0 +1,13 @@
+{
+"nom_sistema":"RELOJ MARCADOR",
+"tel_sistema":"TEL: 55555555",
+"dir_sistema":"DIR: CDE",
+"fecha_sis":"12-12-2021",
+"tiempo_max_emitido":"60",
+"version":"2.9",
+"user_admin":"5",
+"pass_admin":"3",
+"ana_porc_precio_2":"20",
+"ana_porc_precio_3":"30",
+"venta_negativo":false
+}
