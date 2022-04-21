@@ -22,10 +22,10 @@ public class DAO_factura {
     private String mensaje_update = "FACTURA MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO factura(idfactura,fecha_creado,monto_total,iva10,monto_letra,estado,fk_idcliente,fk_idempresa,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE factura SET fecha_creado=?,monto_total=?,iva10=?,monto_letra=?,estado=?,fk_idcliente=?,fk_idempresa=?,fk_idusuario=? WHERE idfactura=?;";
-    private String sql_select = "select f.idfactura as idf,to_char(f.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+    private String sql_select = "select f.idfactura as idf,f.fecha_creado as fecha,\n"
             + "c.nombre as cliente,c.ruc,m.numero_medidor as medidor_nro,it.descripcion,\n"
             + "(it.final_kw-it.inicio_kw) as uso_kw,\n"
-            + "TRIM(to_char(((it.final_kw-it.inicio_kw)*it.monto_tarifa),'999G999G999D99')) as monto,\n"
+            + "((it.final_kw-it.inicio_kw)*it.monto_tarifa) as monto,\n"
             + "f.estado\n"
             + "from factura f,cliente c,dato_medidor m,item_factura it\n"
             + "where f.fk_idcliente=c.idcliente\n"
@@ -131,13 +131,13 @@ public class DAO_factura {
     }
 
     public void imprimir_rep_factura(Connection conn, int idfactura) {
-        String sql = "select f.idfactura as idfac,to_char(f.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+        String sql = "select f.idfactura as idfac,f.fecha_creado as fecha,\n"
                 + "f.monto_total as total,f.iva10 as iva10,f.monto_letra as montoletra,\n"
                 + "e.nombre as emp_nombre,e.direccion as emp_direc,e.telefono as emp_tel,\n"
                 + "cl.nombre as cli_nombre,cl.ruc as cli_ruc,cl.telefono as cli_tel,\n"
                 + "dm.numero_medidor as med_nro,dm.face as med_fase,\n"
-                + "to_char(it.fecha_inicio,'yyyy-MM-dd') as fecini,\n"
-                + "to_char(it.fecha_final,'yyyy-MM-dd') as fecfin,\n"
+                + "it.fecha_inicio as fecini,\n"
+                + "it.fecha_final as fecfin,\n"
                 + "it.inicio_kw as kwini,\n"
                 + "it.final_kw as kwfin,\n"
                 + "(it.final_kw-it.inicio_kw) as kwuso,\n"
@@ -151,6 +151,8 @@ public class DAO_factura {
                 + " order by it.iditem_factura asc ";
         String titulonota = "FACTURA";
         String direccion = "src/REPORTE/FACTURA/repFactura1.jrxml";
-        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        String rutatemp="Fac_luz_"+evefec.getString_formato_fecha()+"_"+idfactura;
+        rep.imprimirPDF(conn, sql, direccion, rutatemp);
+//        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

@@ -5,7 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
 import Evento.Combobox.EvenCombobox;
 import Evento.Grafico.FunFreeChard;
@@ -27,16 +27,17 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private cliente ent = new cliente();
-    private BO_cliente BO = new BO_cliente();
-    private DAO_cliente DAO = new DAO_cliente();
+    private cliente ENTcli = new cliente();
+    private BO_cliente BOcli = new BO_cliente();
+    private DAO_cliente DAOcli = new DAO_cliente();
     private dato_medidor entdm = new dato_medidor();
     private DAO_dato_medidor DAOdm = new DAO_dato_medidor();
     private tarifa entta = new tarifa();
     private DAO_tarifa DAOta = new DAO_tarifa();
     private DAO_factura DAOfac = new DAO_factura();
+    usuario usu = new usuario();
     EvenJTextField evejtf = new EvenJTextField();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
     cla_color_pelete clacolor = new cla_color_pelete();
     EvenCombobox evecmb = new EvenCombobox();
     FunFreeChard chard = new FunFreeChard();
@@ -48,11 +49,26 @@ public class FrmCliente extends javax.swing.JInternalFrame {
         this.setTitle("CLIENTE");
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
-        DAO.actualizar_tabla_cliente(conn, tbltabla);
+        actualizar_tabla();
         color_formulario();
         cargar_dato_medidor();
     }
-
+    private void actualizar_tabla(){
+        if (usu.getGlobal_nivel().equals(usu.getNivel_admin())) {
+            DAOcli.actualizar_tabla_cliente(conn, tblcliente,"");
+        }
+        if (usu.getGlobal_nivel().equals(usu.getNivel_cliente())) {
+            String filtro=" and c.nombre='"+usu.getGlobal_nombre()+"' ";
+            DAOcli.actualizar_tabla_cliente(conn, tblcliente,filtro);
+            tblcliente.requestFocus();
+            tblcliente.changeSelection(0, 0, false, false);
+            seleccionar_tabla();
+            btnnuevo.setEnabled(false);
+            btneditar.setEnabled(false);
+            jCdato_medidor.setEnabled(false);
+            jTabbed_cliente.setSelectedIndex(2);
+        }
+    }
     void cargar_dato_medidor() {
         evecmb.cargarCombobox(conn, jCdato_medidor, "iddato_medidor", "nombre", "dato_medidor", "");
         hab_dato_medidor = true;
@@ -88,48 +104,48 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            ent.setC3nombre(txtnombre.getText());
-            ent.setC4cedula(txtcedula.getText());
-            ent.setC5ruc(txtruc.getText());
-            ent.setC6telefono(txttelefono.getText());
-            ent.setC7ubicacion(txtubicacion.getText());
-            ent.setC8fk_iddato_medidor(fk_iddato_medidor);
-            ent.setC9dia_fac(jSdiafac.getValue().hashCode());
-            ent.setC10activo(jCactivo.isSelected());
-            BO.insertar_cliente(ent, tbltabla);
+            ENTcli.setC3nombre(txtnombre.getText());
+            ENTcli.setC4cedula(txtcedula.getText());
+            ENTcli.setC5ruc(txtruc.getText());
+            ENTcli.setC6telefono(txttelefono.getText());
+            ENTcli.setC7ubicacion(txtubicacion.getText());
+            ENTcli.setC8fk_iddato_medidor(fk_iddato_medidor);
+            ENTcli.setC9dia_fac(jSdiafac.getValue().hashCode());
+            ENTcli.setC10activo(jCactivo.isSelected());
+            BOcli.insertar_cliente(ENTcli, tblcliente);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            ent.setC1idcliente(Integer.parseInt(txtid.getText()));
-            ent.setC3nombre(txtnombre.getText());
-            ent.setC4cedula(txtcedula.getText());
-            ent.setC5ruc(txtruc.getText());
-            ent.setC6telefono(txttelefono.getText());
-            ent.setC7ubicacion(txtubicacion.getText());
-            ent.setC8fk_iddato_medidor(fk_iddato_medidor);
-            ent.setC9dia_fac(jSdiafac.getValue().hashCode());
-            ent.setC10activo(jCactivo.isSelected());
-            BO.update_cliente(ent, tbltabla);
+            ENTcli.setC1idcliente(Integer.parseInt(txtid.getText()));
+            ENTcli.setC3nombre(txtnombre.getText());
+            ENTcli.setC4cedula(txtcedula.getText());
+            ENTcli.setC5ruc(txtruc.getText());
+            ENTcli.setC6telefono(txttelefono.getText());
+            ENTcli.setC7ubicacion(txtubicacion.getText());
+            ENTcli.setC8fk_iddato_medidor(fk_iddato_medidor);
+            ENTcli.setC9dia_fac(jSdiafac.getValue().hashCode());
+            ENTcli.setC10activo(jCactivo.isSelected());
+            BOcli.update_cliente(ENTcli, tblcliente);
         }
     }
 
     private void seleccionar_tabla() {
-        idcliente = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_cliente(conn, ent, idcliente);
-        txtid.setText(String.valueOf(ent.getC1idcliente()));
-        txtnombre.setText(ent.getC3nombre());
-        txtcedula.setText(ent.getC4cedula());
-        txtruc.setText(ent.getC5ruc());
-        txttelefono.setText(ent.getC6telefono());
-        txtubicacion.setText(ent.getC7ubicacion());
-        jSdiafac.setValue(ent.getC9dia_fac());
-        jCactivo.setSelected(ent.getC10activo());
-        cargar_medidor(ent.getC8fk_iddato_medidor());
+        idcliente = eveJtab.getInt_select_id(tblcliente);
+        DAOcli.cargar_cliente(conn, ENTcli, idcliente);
+        txtid.setText(String.valueOf(ENTcli.getC1idcliente()));
+        txtnombre.setText(ENTcli.getC3nombre());
+        txtcedula.setText(ENTcli.getC4cedula());
+        txtruc.setText(ENTcli.getC5ruc());
+        txttelefono.setText(ENTcli.getC6telefono());
+        txtubicacion.setText(ENTcli.getC7ubicacion());
+        jSdiafac.setValue(ENTcli.getC9dia_fac());
+        jCactivo.setSelected(ENTcli.getC10activo());
+        cargar_medidor(ENTcli.getC8fk_iddato_medidor());
         grafico_consumo_mes(idcliente);
-        DAO.actualizar_tabla_cliente_facturas(conn, tblfacturas, idcliente);
+        DAOcli.actualizar_tabla_cliente_facturas(conn, tblfacturas, idcliente);
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
@@ -177,8 +193,8 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 vertical = "KILO WATT";
                 columna=2;
             }
-            DefaultCategoryDataset dataset = DAO.getDataset_consume_por_mes(conn, idcliente,columna);
-            String titulo = "MES DE CONSUMO DE " + ent.getC3nombre();
+            DefaultCategoryDataset dataset = DAOcli.getDataset_consume_por_mes(conn, idcliente,columna);
+            String titulo = "MES DE CONSUMO DE " + ENTcli.getC3nombre();
             String plano_horizontal = "ANO MES";
             String plano_vertical = vertical;
             chard.crear_graficoBar3D(jPanel_grafico_mes, dataset, titulo, plano_horizontal, plano_vertical);
@@ -205,7 +221,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         gru_kw = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jTabbed_cliente = new javax.swing.JTabbedPane();
         panel_insertar = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
@@ -242,7 +258,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
         jCactivo = new javax.swing.JCheckBox();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbltabla = new javax.swing.JTable();
+        tblcliente = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jPanel_grafico_mes = new javax.swing.JPanel();
         jRpor_kw = new javax.swing.JRadioButton();
@@ -575,12 +591,12 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("REGISTRO CLIENTE", panel_insertar);
+        jTabbed_cliente.addTab("REGISTRO CLIENTE", panel_insertar);
 
         panel_tabla.setBackground(new java.awt.Color(51, 204, 255));
         panel_tabla.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA"));
 
-        tbltabla.setModel(new javax.swing.table.DefaultTableModel(
+        tblcliente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -591,12 +607,12 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tbltabla.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblcliente.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                tbltablaMouseReleased(evt);
+                tblclienteMouseReleased(evt);
             }
         });
-        jScrollPane1.setViewportView(tbltabla);
+        jScrollPane1.setViewportView(tblcliente);
 
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
@@ -611,7 +627,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("TABLA CLIENTE", panel_tabla);
+        jTabbed_cliente.addTab("TABLA CLIENTE", panel_tabla);
 
         jPanel_grafico_mes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -670,7 +686,7 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("GRAFICO MES", jPanel3);
+        jTabbed_cliente.addTab("GRAFICO MES", jPanel3);
 
         tblfacturas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -719,18 +735,18 @@ public class FrmCliente extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("FACTURAS DE CLIENTE", jPanel4);
+        jTabbed_cliente.addTab("FACTURAS DE CLIENTE", jPanel4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbed_cliente)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbed_cliente, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -744,13 +760,14 @@ public class FrmCliente extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_cliente(tbltabla);
+        DAOcli.ancho_tabla_cliente(tblcliente);
+        DAOcli.ancho_tabla_cliente_facturas(tblfacturas);
     }//GEN-LAST:event_formInternalFrameOpened
 
-    private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
+    private void tblclienteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblclienteMouseReleased
         // TODO add your handling code here:
         seleccionar_tabla();
-    }//GEN-LAST:event_tbltablaMouseReleased
+    }//GEN-LAST:event_tblclienteMouseReleased
 
     private void btneditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditarActionPerformed
         // TODO add your handling code here:
@@ -857,11 +874,11 @@ public class FrmCliente extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSpinner jSdiafac;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbed_cliente;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JPanel panel_tabla;
+    private javax.swing.JTable tblcliente;
     private javax.swing.JTable tblfacturas;
-    private javax.swing.JTable tbltabla;
     private javax.swing.JTextField txtcedula;
     private javax.swing.JTextField txtdm_face;
     private javax.swing.JTextField txtdm_numero_medidor;

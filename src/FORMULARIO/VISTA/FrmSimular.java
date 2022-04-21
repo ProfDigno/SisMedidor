@@ -5,7 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
 import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
@@ -32,12 +32,12 @@ public class FrmSimular extends javax.swing.JInternalFrame {
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
     EvenJTextField evejtf = new EvenJTextField();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
     EvenFecha evefec = new EvenFecha();
     cla_color_pelete clacolor = new cla_color_pelete();
-    lectura_temp entlt=new lectura_temp();
-    DAO_lectura_temp DAOlt=new DAO_lectura_temp();
-    BO_lectura_temp BOlt=new BO_lectura_temp();
+    lectura_temp entlt = new lectura_temp();
+    DAO_lectura_temp DAOlt = new DAO_lectura_temp();
+    BO_lectura_temp BOlt = new BO_lectura_temp();
     public static DefaultTableModel model_itemf = new DefaultTableModel();
     private Timer tiempo;
     private int contador_id = 0;
@@ -46,6 +46,7 @@ public class FrmSimular extends javax.swing.JInternalFrame {
     int lectura_kw_ini = 0;
     private String numero_medidor = "1001";
     private java.sql.Date fecfinal;
+    private int contador_tiempo_seg;
 
     private void abrir_formulario() {
         this.setTitle("SIMULADOR");
@@ -64,26 +65,28 @@ public class FrmSimular extends javax.swing.JInternalFrame {
         int Ancho[] = {15, 30, 25, 30};
         eveJtab.setAnchoColumnaJtable(tblmedidor, Ancho);
     }
-    boolean validar_simulador(){
-        if(evejtf.getBoo_JTextField_vacio(txtfecinicio, "CARGAR FECHA INICIO")){
+
+    boolean validar_simulador() {
+        if (evejtf.getBoo_JTextField_vacio(txtfecinicio, "CARGAR FECHA INICIO")) {
             return false;
         }
-        if(evejtf.getBoo_JTextField_vacio(txtfecfinal, "CARGAR FECHA FINAL")){
+        if (evejtf.getBoo_JTextField_vacio(txtfecfinal, "CARGAR FECHA FINAL")) {
             return false;
         }
-        if(evejtf.getBoo_JTextField_vacio(txtiniciokw, "CARGAR INICIO KW")){
+        if (evejtf.getBoo_JTextField_vacio(txtiniciokw, "CARGAR INICIO KW")) {
             return false;
         }
-        if(evejtf.getBoo_JTextField_vacio(txtmedidor, "CARGAR NUMERO MEDIDOR")){
+        if (evejtf.getBoo_JTextField_vacio(txtmedidor, "CARGAR NUMERO MEDIDOR")) {
             return false;
         }
         return true;
     }
+
     void boton_iniciar_simulador() {
         if (validar_simulador()) {
 //            DAOlt.truncate_lectura_temp(conn);
             Date fecinicio = evefec.getDate_fecha_cargado(txtfecinicio.getText());
-            lectura_kw_ini=Integer.parseInt(txtiniciokw.getText());
+            lectura_kw_ini = Integer.parseInt(txtiniciokw.getText());
             fecfinal = evefec.getDate_fecha_cargado(txtfecfinal.getText());
             calendario.setTime(fecinicio);
             tempDate = calendario.getTime();
@@ -97,8 +100,8 @@ public class FrmSimular extends javax.swing.JInternalFrame {
         this.dispose();
     }
 
-
     void crear_simulacion() {
+        contador_tiempo_seg++;
         Random claseRandom = new Random();
         int randomInt = 2 + claseRandom.nextInt(50 - 2);
         contador_id++;
@@ -111,8 +114,11 @@ public class FrmSimular extends javax.swing.JInternalFrame {
         entlt.setC3lectura_kw(lectura_kw_ini);
         entlt.setC4numero_medidor(Double.parseDouble(medidor));
         BOlt.insertar_lectura_temp(entlt);
-        DAOlt.actualizar_tabla_lectura_temp(conn, tblmedidor);
-        if(tempDate.after(fecfinal)){
+        if (contador_tiempo_seg > 60) {
+            DAOlt.actualizar_tabla_lectura_temp(conn, tblmedidor);
+            contador_tiempo_seg = 0;
+        }
+        if (tempDate.after(fecfinal)) {
             boton_parar();
         }
     }

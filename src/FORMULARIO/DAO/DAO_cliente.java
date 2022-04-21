@@ -26,8 +26,8 @@ public class DAO_cliente {
     private String sql_select = "select c.idcliente,c.nombre,c.ruc,c.telefono,c.dia_fac as dia,\n"
             + "m.numero_medidor as medidor\n"
             + " from cliente c,dato_medidor m\n"
-            + " where c.fk_iddato_medidor=m.iddato_medidor\n"
-            + " order by 2 asc; ";
+            + " where c.fk_iddato_medidor=m.iddato_medidor "
+            + " ";
     private String sql_cargar = "SELECT idcliente,fecha_creacion,nombre,cedula,ruc,telefono,ubicacion,fk_iddato_medidor,dia_fac,activo FROM cliente WHERE idcliente=";
     
 
@@ -105,8 +105,8 @@ public class DAO_cliente {
         }
     }
 
-    public void actualizar_tabla_cliente(Connection conn, JTable tbltabla) {
-        eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+    public void actualizar_tabla_cliente(Connection conn, JTable tbltabla,String filtro) {
+        eveconn.Select_cargar_jtable(conn, sql_select+filtro+" order by 2 asc; ", tbltabla);
         ancho_tabla_cliente(tbltabla);
     }
 
@@ -118,7 +118,7 @@ public class DAO_cliente {
     public void actualizar_tabla_cliente_buscar(Connection conn, JTable tbltabla, String campo, String buscar) {
         String sql_select_buscar = "SELECT idcliente as id,nombre,ruc "
                 + "FROM cliente where "
-                + " " + campo + " ilike'%" + buscar + "%' and activo=true "
+                + " " + campo + " like'%" + buscar + "%' and activo=true "
                 + "order by nombre desc limit 100;";
         eveconn.Select_cargar_jtable(conn, sql_select_buscar, tbltabla);
         ancho_tabla_cliente_buscar(tbltabla);
@@ -129,10 +129,10 @@ public class DAO_cliente {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
     public void actualizar_tabla_cliente_facturas(Connection conn, JTable tbltabla, int idcliente) {
-         String sql_factura = "select f.idfactura as idf,to_char(f.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+         String sql_factura = "select f.idfactura as idf,f.fecha_creado as fecha,\n"
             + "m.numero_medidor as medidor_nro,it.descripcion,\n"
             + "(it.final_kw-it.inicio_kw) as uso_kw,\n"
-            + "TRIM(to_char(((it.final_kw-it.inicio_kw)*it.monto_tarifa),'999G999G999D99')) as monto\n"
+            + "((it.final_kw-it.inicio_kw)*it.monto_tarifa) as monto\n"
             + "from factura f,cliente c,dato_medidor m,item_factura it\n"
             + "where f.fk_idcliente=c.idcliente\n"
             + "and f.idfactura=it.fk_idfactura\n"

@@ -5,7 +5,7 @@
  */
 package FORMULARIO.DAO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import BASEDATO.EvenConexion;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
@@ -27,20 +27,20 @@ public class DAO_usuario {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private String mensaje_insert = "USUARIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "USUARIO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO public.usuario(\n"
+    private String sql_insert = "INSERT INTO usuario(\n"
             + "            idusuario, nombre, usuario, senha, nivel)\n"
             + "    VALUES (?, ?, ?, ?, ?);";
-    private String sql_update = "UPDATE public.usuario\n"
+    private String sql_update = "UPDATE usuario\n"
             + "   SET  nombre=?, usuario=?, senha=?, nivel=?\n"
             + " WHERE idusuario=?;";
     private String sql_select = "select idusuario, nombre, usuario, nivel from usuario order by 1 asc";
     private String sql_cargar = "SELECT idusuario, nombre, usuario, senha, nivel\n"
-            + "  FROM public.usuario where idusuario=";
+            + "  FROM usuario where idusuario=";
 
     public void cargar_usuario(usuario usu, JTable tabla) {
         String titulo = "cargar_usuario";
         int id = evejt.getInt_select_id(tabla);
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + id, titulo);
             if (rs.next()) {

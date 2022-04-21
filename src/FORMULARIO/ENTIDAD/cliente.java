@@ -73,6 +73,8 @@ private boolean C10activo;
 private static int C8fk_iddato_medidor_global;
 private static String nom_tabla;
 private static String nom_idtabla;
+private static boolean busca_factura;
+private static boolean busca_usuario;
 //---------------TABLA-ID---------------
 	public cliente() {
 		setTb_cliente("cliente");
@@ -156,4 +158,21 @@ private static String nom_idtabla;
     public static void setC1idcliente_global(int aC1idcliente_global) {
         C1idcliente_global = aC1idcliente_global;
     }
+
+    public static boolean isBusca_factura() {
+        return busca_factura;
+    }
+
+    public static void setBusca_factura(boolean busca_factura) {
+        cliente.busca_factura = busca_factura;
+    }
+
+    public static boolean isBusca_usuario() {
+        return busca_usuario;
+    }
+
+    public static void setBusca_usuario(boolean busca_usuario) {
+        cliente.busca_usuario = busca_usuario;
+    }
+    
 }

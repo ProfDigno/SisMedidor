@@ -1,6 +1,6 @@
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_lectura_temp;
 import FORMULARIO.ENTIDAD.lectura_temp;
@@ -15,7 +15,7 @@ public class BO_lectura_temp {
 
     public void insertar_lectura_temp(lectura_temp ltmp) {
         String titulo = "insertar_lectura_temp";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -36,7 +36,7 @@ public class BO_lectura_temp {
     public void update_lectura_temp(lectura_temp ltmp, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR LECTURA_TEMP", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_lectura_temp";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
@@ -56,7 +56,7 @@ public class BO_lectura_temp {
     }
     public void truncate_lectura_temp() {
             String titulo = "truncate_lectura_temp";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);

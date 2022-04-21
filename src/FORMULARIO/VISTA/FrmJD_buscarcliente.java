@@ -6,7 +6,7 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.*;
 import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
@@ -26,26 +26,26 @@ import java.sql.Connection;
  */
 public class FrmJD_buscarcliente extends javax.swing.JDialog {
 
-    EvenJFRAME evetbl = new EvenJFRAME();
-    EvenJTextField evejtf = new EvenJTextField();
-    EvenFecha evefec = new EvenFecha();
-    EvenJtable evejta = new EvenJtable();
-    EvenJtable evejt = new EvenJtable();
-    Connection conn = ConnPostgres.getConnPosgres();
-    EvenConexion eveconn = new EvenConexion();
-    cla_color_pelete clacolor = new cla_color_pelete();
-    cliente entidad = new cliente();
-    DAO_cliente DAO = new DAO_cliente();
-    BO_cliente BO = new BO_cliente();
-     private dato_medidor entdm = new dato_medidor();
+    private EvenJFRAME evetbl = new EvenJFRAME();
+    private EvenJTextField evejtf = new EvenJTextField();
+    private EvenFecha evefec = new EvenFecha();
+    private EvenJtable evejta = new EvenJtable();
+    private EvenJtable evejt = new EvenJtable();
+    private Connection conn = ConnMySql.getConnMySql();
+    private EvenConexion eveconn = new EvenConexion();
+    private cla_color_pelete clacolor = new cla_color_pelete();
+    cliente ENTcli = new cliente();
+    private DAO_cliente DAOcli = new DAO_cliente();
+    private BO_cliente BOcli = new BO_cliente();
+    private dato_medidor entdm = new dato_medidor();
     private DAO_dato_medidor DAOdm = new DAO_dato_medidor();
-     private tarifa entta = new tarifa();
+    private tarifa entta = new tarifa();
     private DAO_tarifa DAOta = new DAO_tarifa();
-    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
 
     private void abrir_formulario() {
         this.setTitle("BUSCAR CLIENTE");
-        DAO.actualizar_tabla_cliente_buscar(conn, tblbuscar_cliente, "nombre", "");
+        DAOcli.actualizar_tabla_cliente_buscar(conn, tblbuscar_cliente, "nombre", "");
         color_formulario();
     }
 
@@ -57,29 +57,38 @@ public class FrmJD_buscarcliente extends javax.swing.JDialog {
     private void seleccionar_tabla() {
         if (tblbuscar_cliente.getSelectedRow() >= 0) {
             int idcliente = evejt.getInt_select_id(tblbuscar_cliente);
-            DAO.cargar_cliente(conn, entidad, idcliente);
-            FrmFacturar.txtcliente_nombre.setText(entidad.getC3nombre());
-            FrmFacturar.txtcliente_ruc.setText(entidad.getC5ruc());
-            FrmFacturar.txtcliente_direccion.setText(entidad.getC7ubicacion());
-            FrmFacturar.txtclinte_telefono.setText(entidad.getC6telefono());
-            cargar_medidor(entidad.getC8fk_iddato_medidor());
-            FrmFacturar.txtcliente_direccion.setBackground(Color.orange);
-            FrmFacturar.txtcliente_direccion.grabFocus();
+            DAOcli.cargar_cliente(conn, ENTcli, idcliente);
+            if (ENTcli.isBusca_factura()) {
+                FrmFacturar.txtcliente_nombre.setText(ENTcli.getC3nombre());
+                FrmFacturar.txtcliente_ruc.setText(ENTcli.getC5ruc());
+                FrmFacturar.txtcliente_direccion.setText(ENTcli.getC7ubicacion());
+                FrmFacturar.txtclinte_telefono.setText(ENTcli.getC6telefono());
+                cargar_medidor(ENTcli.getC8fk_iddato_medidor());
+                FrmFacturar.txtcliente_direccion.setBackground(Color.orange);
+                FrmFacturar.txtcliente_direccion.grabFocus();
+            }
+            if (ENTcli.isBusca_usuario()) {
+                FrmUsuario.txtu2nombre.setText(ENTcli.getC3nombre());
+            }
         }
     }
-    void cargar_medidor(int fk_iddato_medidor){
+
+    private void cargar_medidor(int fk_iddato_medidor) {
         DAOdm.cargar_dato_medidor(conn, entdm, fk_iddato_medidor);
-        FrmFacturar.txtdm_nombre.setText(entdm.getC3nombre());
-        FrmFacturar.txtdm_numero_medidor.setText(String.valueOf(entdm.getC2numero_medidor()));
-        FrmFacturar.txtdm_pulso_kw.setText(String.valueOf(entdm.getC4pulso_kw()));
-        FrmFacturar.txtdm_face.setText(entdm.getC5face());
-        DAOta.cargar_tarifa(conn, entta, entdm.getC6fk_idtarifa());
-        FrmFacturar.txtta_tipo.setText(entta.getC3tipo());
-        FrmFacturar.jFmonto_tarifa.setValue(entta.getC4monto_tarifa());
+        if (ENTcli.isBusca_factura()) {
+            FrmFacturar.txtdm_nombre.setText(entdm.getC3nombre());
+            FrmFacturar.txtdm_numero_medidor.setText(String.valueOf(entdm.getC2numero_medidor()));
+            FrmFacturar.txtdm_pulso_kw.setText(String.valueOf(entdm.getC4pulso_kw()));
+            FrmFacturar.txtdm_face.setText(entdm.getC5face());
+            DAOta.cargar_tarifa(conn, entta, entdm.getC6fk_idtarifa());
+            FrmFacturar.txtta_tipo.setText(entta.getC3tipo());
+            FrmFacturar.jFmonto_tarifa.setValue(entta.getC4monto_tarifa());
+        }
     }
-    void buscar_cliente(java.awt.event.KeyEvent evt, String campo, String buscar) {
+
+    private void buscar_cliente(java.awt.event.KeyEvent evt, String campo, String buscar) {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            DAO.actualizar_tabla_cliente_buscar(conn, tblbuscar_cliente, campo, buscar);
+            DAOcli.actualizar_tabla_cliente_buscar(conn, tblbuscar_cliente, campo, buscar);
         }
         if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
             tblbuscar_cliente.requestFocus();
@@ -246,7 +255,7 @@ public class FrmJD_buscarcliente extends javax.swing.JDialog {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_cliente_buscar(tblbuscar_cliente);
+        DAOcli.ancho_tabla_cliente_buscar(tblbuscar_cliente);
     }//GEN-LAST:event_formWindowOpened
 
     private void tblbuscar_clienteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbuscar_clienteMouseReleased
@@ -267,6 +276,8 @@ public class FrmJD_buscarcliente extends javax.swing.JDialog {
     private void btnsalect_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsalect_salirActionPerformed
         // TODO add your handling code here:
         this.dispose();
+        ENTcli.setBusca_factura(false);
+        ENTcli.setBusca_usuario(false);
     }//GEN-LAST:event_btnsalect_salirActionPerformed
 
     private void txtnombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombreKeyReleased
@@ -278,6 +289,8 @@ public class FrmJD_buscarcliente extends javax.swing.JDialog {
         if (evt.getClickCount() == 2) {
             seleccionar_tabla();
             this.dispose();
+            ENTcli.setBusca_factura(false);
+            ENTcli.setBusca_usuario(false);
         }
     }//GEN-LAST:event_tblbuscar_clienteMousePressed
 
@@ -286,6 +299,8 @@ public class FrmJD_buscarcliente extends javax.swing.JDialog {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             seleccionar_tabla();
             this.dispose();
+            ENTcli.setBusca_factura(false);
+            ENTcli.setBusca_usuario(false);
         }
     }//GEN-LAST:event_tblbuscar_clienteKeyPressed
 

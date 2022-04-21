@@ -24,7 +24,8 @@ public class EvenCombobox {
         String titulo="cargarCombobox";
       DefaultComboBoxModel model = (DefaultComboBoxModel) combo.getModel();
       model.removeAllElements();//eliminamos todo antes de cargar
-      String sql="select ('('||"+id+"||')-'||"+nombre+") as nombre from "+tabla+" "+where+";";
+//      String sql="select ('('||"+id+"||')-'||"+nombre+") as nombre from "+tabla+" "+where+";"; //postgres
+      String sql="select CONCAT('(',"+id+",')-',"+nombre+") as nombre from "+tabla+" "+where+";"; //mysql
         try{
             ResultSet rs=eveconn.getResulsetSQL(conn, sql, titulo);
             combo.addItem("-SELECCIONAR-"); 

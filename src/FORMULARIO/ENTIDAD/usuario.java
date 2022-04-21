@@ -30,10 +30,14 @@ public class usuario {
     private static String global_nivel;
     private static String tabla;
     private static String idtabla;
+    private static String nivel_admin;
+    private static String nivel_cliente;
     
     public usuario() {
          setTabla("usuario");
          setIdtabla("idusuario");
+         setNivel_admin("ADMIN");
+         setNivel_cliente("CLIENTE");
     }
 
     public static int getGlobal_idusuario() {
@@ -114,6 +118,22 @@ public class usuario {
 
     public static void setIdtabla(String idtabla) {
         usuario.idtabla = idtabla;
+    }
+
+    public static String getNivel_admin() {
+        return nivel_admin;
+    }
+
+    public static void setNivel_admin(String nivel_admin) {
+        usuario.nivel_admin = nivel_admin;
+    }
+
+    public static String getNivel_cliente() {
+        return nivel_cliente;
+    }
+
+    public static void setNivel_cliente(String nivel_cliente) {
+        usuario.nivel_cliente = nivel_cliente;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_tarifa;
 import FORMULARIO.ENTIDAD.tarifa;
@@ -15,7 +15,7 @@ public class BO_tarifa {
 
     public void insertar_tarifa(tarifa tar, JTable tbltabla) {
         String titulo = "insertar_tarifa";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -36,7 +36,7 @@ public class BO_tarifa {
     public void update_tarifa(tarifa tar, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR TARIFA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_tarifa";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);

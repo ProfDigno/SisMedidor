@@ -7,6 +7,7 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
+import Evento.Combobox.EvenCombobox;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
@@ -14,82 +15,130 @@ import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
 import java.sql.Connection;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Digno
  */
-public class FrmTarifa extends javax.swing.JInternalFrame {
+public class FrmDatoMedidor1 extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private tarifa ent = new tarifa();
-    private BO_tarifa BO = new BO_tarifa();
-    private DAO_tarifa DAO = new DAO_tarifa();
+    private dato_medidor ent = new dato_medidor();
+    private BO_dato_medidor BO = new BO_dato_medidor();
+    private DAO_dato_medidor DAO = new DAO_dato_medidor();
+    private tarifa entta = new tarifa();
+    private DAO_tarifa DAOta = new DAO_tarifa();
     EvenJTextField evejtf = new EvenJTextField();
+    EvenCombobox evecmb = new EvenCombobox();
     Connection conn = ConnMySql.getConnMySql();
     cla_color_pelete clacolor= new cla_color_pelete();
+    String face_MONOFACICO="MONOFACICO";
+    String face_TRIFACICO="TRIFACICO";
+    private boolean hab_tarifa;
+    private int fk_idtarifa=0;
     private void abrir_formulario() {
-        this.setTitle("TARIFA");
+        this.setTitle("DATO MEDIDOR");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_tarifa(conn, tbltabla);
+        DAO.actualizar_tabla_dato_medidor(conn, tbltabla);
         color_formulario();
+        cargar_tarifa();
+    }
+    void cargar_tarifa(){
+        evecmb.cargarCombobox(conn, jCtarifa, "idtarifa", "tipo","tarifa","");
+        hab_tarifa=true;
     }
     private void color_formulario(){
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
     }
     private boolean validar_guardar() {
-        if (evejtf.getBoo_JTextField_vacio(txttipo, "DEBE CARGAR UN TIPO DE MEDIDOR")) {
+        if (evejtf.getBoo_JTextField_vacio(txtnumero_medidor, "DEBE CARGAR UN MEDIDOR")) {
             return false;
         }
-        if (evejtf.getBoo_JTextField_vacio(txtmonto, "DEBE CARGAR UN MONTO")) {
+        if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtpulso_kw, "DEBE CARGAR UN PULSO KW")) {
+            return false;
+        }
+        if(jCtarifa.getSelectedIndex()==0){
+            JOptionPane.showMessageDialog(null,"SE DEBE SELLECCIONAR UNA TARIFA","ERROR",JOptionPane.ERROR_MESSAGE);
+            return false;
+            
         }
         return true;
     }
-
+    private String getStringFace(){
+        String face="error";
+        if(jRmonofasico.isSelected()){
+            face=face_MONOFACICO;
+        }
+        if(jRtrifacico.isSelected()){
+            face=face_TRIFACICO;
+        }
+        return face;
+    }
     private void boton_guardar() {
         if (validar_guardar()) {
-            ent.setC3tipo(txttipo.getText());
-            ent.setC4monto_tarifa(Double.parseDouble(txtmonto.getText()));
-            BO.insertar_tarifa(ent, tbltabla);
+            ent.setC2numero_medidor(Integer.parseInt(txtnumero_medidor.getText()));
+            ent.setC3nombre(txtnombre.getText());
+            ent.setC4pulso_kw(Integer.parseInt(txtpulso_kw.getText()));
+            ent.setC5face(getStringFace());
+            ent.setC6fk_idtarifa(fk_idtarifa);
+            BO.insertar_dato_medidor(ent, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            ent.setC1idtarifa(Integer.parseInt(txtid.getText()));
-            ent.setC3tipo(txttipo.getText());
-            ent.setC4monto_tarifa(Double.parseDouble(txtmonto.getText()));
-            BO.update_tarifa(ent, tbltabla);
+            ent.setC2numero_medidor(Integer.parseInt(txtnumero_medidor.getText()));
+            ent.setC3nombre(txtnombre.getText());
+            ent.setC4pulso_kw(Integer.parseInt(txtpulso_kw.getText()));
+            ent.setC5face(getStringFace());
+            ent.setC6fk_idtarifa(fk_idtarifa);
+            BO.update_dato_medidor(ent, tbltabla);
         }
     }
 
     private void seleccionar_tabla() {
-        int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_tarifa(conn,ent, idproducto);
-        txtid.setText(String.valueOf(ent.getC1idtarifa()));
-        txttipo.setText(ent.getC3tipo());
-        txtmonto.setText(String.valueOf(ent.getC4monto_tarifa()));
+        int iddatomedidor = eveJtab.getInt_select_id(tbltabla);
+        DAO.cargar_dato_medidor(conn,ent, iddatomedidor);
+        txtid.setText(String.valueOf(ent.getC1iddato_medidor()));
+        txtnumero_medidor.setText(String.valueOf(ent.getC2numero_medidor()));
+        txtnombre.setText(ent.getC3nombre());
+        txtpulso_kw.setText(String.valueOf(ent.getC4pulso_kw()));
+        if(ent.getC5face().equals(face_MONOFACICO)){
+            jRmonofasico.setSelected(true);
+        }
+        if(ent.getC5face().equals(face_TRIFACICO)){
+            jRtrifacico.setSelected(true);
+        }
+        DAOta.cargar_tarifa(conn, entta, ent.getC6fk_idtarifa());
+        jCtarifa.setSelectedItem("("+entta.getC1idtarifa()+")-"+entta.getC3tipo());
+        jFmontotarifa.setValue(entta.getC4monto_tarifa());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
-        txttipo.setText(null);
-        txtmonto.setText(null);
+        txtnumero_medidor.setText(null);
+        txtnombre.setText(null);
+        txtpulso_kw.setText(null);
+        jRmonofasico.setSelected(true);
+        jCtarifa.setSelectedIndex(0);
         btnguardar.setEnabled(true);
         btneditar.setEnabled(false);
         btndeletar.setEnabled(false);
-        txttipo.grabFocus();
+        txtnumero_medidor.grabFocus();
     }
     private void boton_nuevo(){
         reestableser();
     }
-    public FrmTarifa() {
+    public FrmDatoMedidor1() {
         initComponents();
         abrir_formulario();
     }
@@ -103,17 +152,27 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        gru_face = new javax.swing.ButtonGroup();
         panel_insertar = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txttipo = new javax.swing.JTextField();
+        txtnumero_medidor = new javax.swing.JTextField();
         btnnuevo = new javax.swing.JButton();
         btnguardar = new javax.swing.JButton();
         btneditar = new javax.swing.JButton();
         btndeletar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        txtmonto = new javax.swing.JTextField();
+        txtnombre = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtpulso_kw = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jRmonofasico = new javax.swing.JRadioButton();
+        jRtrifacico = new javax.swing.JRadioButton();
+        jLabel6 = new javax.swing.JLabel();
+        jCtarifa = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        jFmontotarifa = new javax.swing.JFormattedTextField();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltabla = new javax.swing.JTable();
@@ -149,12 +208,15 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
         txtid.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setText("TIPO:");
+        jLabel2.setText("NRO. MEDIDOR:");
 
-        txttipo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txttipo.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtnumero_medidor.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtnumero_medidor.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                txttipoKeyPressed(evt);
+                txtnumero_medidorKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtnumero_medidorKeyTyped(evt);
             }
         });
 
@@ -194,37 +256,72 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel3.setText("MONTO:");
+        jLabel3.setText("NOMBRE:");
 
-        txtmonto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtmonto.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtnombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtnombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtmontoKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtmontoKeyTyped(evt);
+                txtnombreKeyPressed(evt);
             }
         });
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel4.setText("PULSO KW:");
+
+        txtpulso_kw.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtpulso_kw.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtpulso_kwKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtpulso_kwKeyTyped(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel5.setText("FASE:");
+
+        gru_face.add(jRmonofasico);
+        jRmonofasico.setSelected(true);
+        jRmonofasico.setText("MONOFASICO");
+
+        gru_face.add(jRtrifacico);
+        jRtrifacico.setText("TRIFACICO");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel6.setText("TARIFA:");
+
+        jCtarifa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jCtarifa.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCtarifaItemStateChanged(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel7.setText("MONTO:");
+
+        jFmontotarifa.setEditable(false);
+        jFmontotarifa.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0.00 Gs"))));
+        jFmontotarifa.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
         panel_insertarLayout.setHorizontalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtmonto))
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txttipo)))
+                            .addComponent(txtnumero_medidor, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                            .addComponent(txtnombre)))
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(btnnuevo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -232,9 +329,25 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btneditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btndeletar)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(18, 18, 18))
+                        .addComponent(btndeletar))
+                    .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_insertarLayout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addGap(49, 49, 49)
+                            .addComponent(txtpulso_kw))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_insertarLayout.createSequentialGroup()
+                            .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel6)
+                                .addComponent(jLabel7))
+                            .addGap(76, 76, 76)
+                            .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(panel_insertarLayout.createSequentialGroup()
+                                    .addComponent(jRmonofasico)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(jRtrifacico))
+                                .addComponent(jCtarifa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jFmontotarifa, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -246,11 +359,28 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txttipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnumero_medidor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtmonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtpulso_kw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jRmonofasico)
+                    .addComponent(jRtrifacico))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jCtarifa))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jFmontotarifa, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
@@ -285,13 +415,13 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 15, Short.MAX_VALUE))
+                .addGap(0, 28, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -301,7 +431,8 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panel_insertar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panel_tabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panel_tabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -309,7 +440,7 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(panel_tabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panel_insertar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 20, Short.MAX_VALUE))
+                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         pack();
@@ -322,7 +453,7 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_tarifa(tbltabla);
+        DAO.ancho_tabla_dato_medidor(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -340,19 +471,37 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
         boton_nuevo();
     }//GEN-LAST:event_btnnuevoActionPerformed
 
-    private void txttipoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttipoKeyPressed
+    private void txtnumero_medidorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnumero_medidorKeyPressed
         // TODO add your handling code here:
 //        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
-    }//GEN-LAST:event_txttipoKeyPressed
+    }//GEN-LAST:event_txtnumero_medidorKeyPressed
 
-    private void txtmontoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmontoKeyPressed
+    private void txtnombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnombreKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtmontoKeyPressed
+    }//GEN-LAST:event_txtnombreKeyPressed
 
-    private void txtmontoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmontoKeyTyped
+    private void txtpulso_kwKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpulso_kwKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtpulso_kwKeyPressed
+
+    private void jCtarifaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCtarifaItemStateChanged
+        // TODO add your handling code here:
+        if(hab_tarifa){
+            fk_idtarifa=evecmb.getInt_seleccionar_COMBOBOX(conn, jCtarifa,"idtarifa", "tipo", "tarifa");
+            DAOta.cargar_tarifa(conn, entta, fk_idtarifa);
+            jFmontotarifa.setValue(entta.getC4monto_tarifa());
+        }
+    }//GEN-LAST:event_jCtarifaItemStateChanged
+
+    private void txtnumero_medidorKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnumero_medidorKeyTyped
         // TODO add your handling code here:
         evejtf.soloNumero(evt);
-    }//GEN-LAST:event_txtmontoKeyTyped
+    }//GEN-LAST:event_txtnumero_medidorKeyTyped
+
+    private void txtpulso_kwKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpulso_kwKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtpulso_kwKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -360,15 +509,25 @@ public class FrmTarifa extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneditar;
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnnuevo;
+    private javax.swing.ButtonGroup gru_face;
+    private javax.swing.JComboBox<String> jCtarifa;
+    private javax.swing.JFormattedTextField jFmontotarifa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JRadioButton jRmonofasico;
+    private javax.swing.JRadioButton jRtrifacico;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JPanel panel_tabla;
     private javax.swing.JTable tbltabla;
     private javax.swing.JTextField txtid;
-    private javax.swing.JTextField txtmonto;
-    private javax.swing.JTextField txttipo;
+    private javax.swing.JTextField txtnombre;
+    private javax.swing.JTextField txtnumero_medidor;
+    private javax.swing.JTextField txtpulso_kw;
     // End of variables declaration//GEN-END:variables
 }

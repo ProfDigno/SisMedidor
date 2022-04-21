@@ -1,7 +1,7 @@
 {
 "localhost":"localhost",
-"port":"5432",
-"basedato":"bdmedidor_1",
-"usuario":"postgres",
-"password":"4650586"
+"port":"3306",
+"basedato":"bdmedidor_electrico",
+"usuario":"dignot",
+"password":"4650586311088"
 }

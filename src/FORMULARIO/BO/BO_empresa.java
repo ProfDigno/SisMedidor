@@ -1,5 +1,5 @@
 	package FORMULARIO.BO;
-	import BASEDATO.LOCAL.ConnPostgres;
+	import BASEDATO.LOCAL.ConnMySql;
 	import Evento.Mensaje.EvenMensajeJoptionpane;
 	import FORMULARIO.DAO.DAO_empresa;
 	import FORMULARIO.ENTIDAD.empresa;
@@ -12,7 +12,7 @@ private DAO_empresa emp_dao = new DAO_empresa();
 
 	public void insertar_empresa(empresa emp, JTable tbltabla) {
 		String titulo = "insertar_empresa";
-		Connection conn = ConnPostgres.getConnPosgres();
+		Connection conn = ConnMySql.getConnMySql();
 		try {
 			if (conn.getAutoCommit()) {
 				conn.setAutoCommit(false);
@@ -32,7 +32,7 @@ private DAO_empresa emp_dao = new DAO_empresa();
 	public void update_empresa(empresa emp, JTable tbltabla) {
 		if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR EMPRESA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
 			String titulo = "update_empresa";
-			Connection conn = ConnPostgres.getConnPosgres();
+			Connection conn = ConnMySql.getConnMySql();
 			try {
 				if (conn.getAutoCommit()) {
 					conn.setAutoCommit(false);

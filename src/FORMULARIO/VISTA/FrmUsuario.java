@@ -5,7 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
@@ -24,8 +24,9 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
     usuario usu = new usuario();
     BO_usuario uBO = new BO_usuario();
     DAO_usuario pdao = new DAO_usuario();
+    cliente ENTcli = new cliente();
     EvenJTextField evejtf = new EvenJTextField();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
     cla_color_pelete clacolor= new cla_color_pelete();
     /**
      * Creates new form FrmZonaDelivery
@@ -132,6 +133,7 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         cmb5nivel = new javax.swing.JComboBox<>();
+        btnbuscarcliente = new javax.swing.JButton();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblusuario = new javax.swing.JTable();
@@ -235,7 +237,14 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
         jLabel5.setText("NIVEL:");
 
         cmb5nivel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        cmb5nivel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "VENTA", "ADMIN" }));
+        cmb5nivel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CLIENTE", "ADMIN" }));
+
+        btnbuscarcliente.setText("BUSCAR CLIENTE");
+        btnbuscarcliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscarclienteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertLayout = new javax.swing.GroupLayout(panel_insert);
         panel_insert.setLayout(panel_insertLayout);
@@ -253,7 +262,11 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panel_insertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtu4senha)
-                            .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panel_insertLayout.createSequentialGroup()
+                                .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(62, 62, 62)
+                                .addComponent(btnbuscarcliente)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(txtu2nombre)
                             .addComponent(txtu3usuario)))
                     .addGroup(panel_insertLayout.createSequentialGroup()
@@ -279,7 +292,8 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_insertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnbuscarcliente))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -399,8 +413,16 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtu4senhaKeyPressed
 
+    private void btnbuscarclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscarclienteActionPerformed
+        // TODO add your handling code here:
+        ENTcli.setBusca_usuario(true);
+        FrmJD_buscarcliente frm = new FrmJD_buscarcliente(null, true);
+        frm.setVisible(true);
+    }//GEN-LAST:event_btnbuscarclienteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnbuscarcliente;
     private javax.swing.JButton btndeletar;
     private javax.swing.JButton btneditar;
     private javax.swing.JButton btnguardar;
@@ -416,7 +438,7 @@ public class FrmUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panel_tabla;
     private javax.swing.JTable tblusuario;
     private javax.swing.JTextField txtid;
-    private javax.swing.JTextField txtu2nombre;
+    public static javax.swing.JTextField txtu2nombre;
     private javax.swing.JTextField txtu3usuario;
     private javax.swing.JTextField txtu4senha;
     // End of variables declaration//GEN-END:variables

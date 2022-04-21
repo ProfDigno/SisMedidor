@@ -20,7 +20,9 @@ public class DAO_item_consumo_medidor {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "ITEM_CONSUMO_MEDIDOR GUARDADO CORRECTAMENTE";
     private String mensaje_update = "ITEM_CONSUMO_MEDIDOR MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO item_consumo_medidor(iditem_consumo_medidor,fecha_creado,lectura_kw,fk_iddato_medidor) VALUES (?,?,?,?);";
+    private String sql_insert = "INSERT INTO item_consumo_medidor"
+            + "(iditem_consumo_medidor,fecha_creado,lectura_kw,fk_iddato_medidor) "
+            + "VALUES (?,?,?,?);";
     private String sql_update = "UPDATE item_consumo_medidor SET fecha_creado=?,lectura_kw=?,fk_iddato_medidor=? WHERE iditem_consumo_medidor=?;";
     private String sql_select = "SELECT iditem_consumo_medidor,fecha_creado,lectura_kw,fk_iddato_medidor FROM item_consumo_medidor order by 1 desc;";
     private String sql_cargar = "SELECT iditem_consumo_medidor,fecha_creado,lectura_kw,fk_iddato_medidor FROM item_consumo_medidor WHERE iditem_consumo_medidor=";

@@ -5,7 +5,7 @@
  */
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_usuario;
 import FORMULARIO.ENTIDAD.usuario;
@@ -23,7 +23,7 @@ public class BO_usuario {
 
     public void insertar_usuario(usuario usu, JTable tbltabla) {
         String titulo = "insertar_usuario";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -42,7 +42,7 @@ public class BO_usuario {
     }
     public void insertar_usuario(usuario usu) {
         String titulo = "insertar_usuario";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -61,7 +61,7 @@ public class BO_usuario {
     public void update_usuario(usuario usu, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR ESTE USUARIO", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_usuario";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);

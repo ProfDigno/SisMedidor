@@ -1,6 +1,6 @@
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_item_factura;
 import FORMULARIO.ENTIDAD.item_factura;
@@ -15,7 +15,7 @@ public class BO_item_factura {
 
     public void insertar_item_factura(item_factura ifac, JTable tbltabla) {
         String titulo = "insertar_item_factura";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -36,7 +36,7 @@ public class BO_item_factura {
     public void update_item_factura(item_factura ifac, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR ITEM_FACTURA", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_item_factura";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);

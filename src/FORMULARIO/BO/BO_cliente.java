@@ -1,6 +1,6 @@
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_cliente;
 import FORMULARIO.ENTIDAD.cliente;
@@ -15,13 +15,13 @@ public class BO_cliente {
 
     public void insertar_cliente(cliente cl, JTable tbltabla) {
         String titulo = "insertar_cliente";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
             cl_dao.insertar_cliente(conn, cl);
-            cl_dao.actualizar_tabla_cliente(conn, tbltabla);
+//            cl_dao.actualizar_tabla_cliente(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, cl.toString(), titulo);
@@ -36,13 +36,13 @@ public class BO_cliente {
     public void update_cliente(cliente cl, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR CLIENTE", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_cliente";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);
                 }
                 cl_dao.update_cliente(conn, cl);
-                cl_dao.actualizar_tabla_cliente(conn, tbltabla);
+//                cl_dao.actualizar_tabla_cliente(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, cl.toString(), titulo);

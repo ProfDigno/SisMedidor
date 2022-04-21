@@ -23,9 +23,9 @@ import org.postgresql.Driver;
  *
  * @author Pc
  */
-public class ConnPostgres {
+public class ConnMySql {
 
-    private static Connection connPostgres = null;
+    private static Connection connMySql = null;
     public static String PsDriver;
     public static String PsConexion;
     public static String PsLocalhost;
@@ -63,14 +63,16 @@ public class ConnPostgres {
     }
 
     void cargarVariables() {
-        PsDriver = "org.postgresql.Driver";
-        PsConexion = "jdbc:postgresql";
+//        PsDriver = "org.postgresql.Driver";
+//        PsConexion = "jdbc:postgresql";
+        PsDriver = "com.mysql.jdbc.Driver";
+        PsConexion = "jdbc:mysql";
         PsLocalhost = var.getPsLocalhost();
         PsPort = var.getPsPort();
         PsNomBD = var.getPsNomBD();
         PsUsuario = var.getPsUsuario();
         PsContrasena = var.getPsContrasena();
-        System.out.println("++++++++++++++++Carga de variable de JSON para la conexion postgres=" + "\n" + PsDriver + "\n" + PsUsuario + "\n" + PsContrasena);
+        System.out.println("++++++++++++++++Carga de variable de JSON para la conexion Mysql=" + "\n" + PsDriver + "\n" + PsUsuario + "\n" + PsContrasena);
     }
 
     public String getDatos_conexion() {
@@ -79,7 +81,7 @@ public class ConnPostgres {
         return dato;
     }
 
-    public void ConnectDBpostgres(Connection connConfig, boolean cargarsqlite, boolean msj) {
+    public void ConnectDBmysql(Connection connConfig, boolean cargarsqlite, boolean msj) {
         cargar_jsom_conexion();
         cargarVariables();
         try {
@@ -89,10 +91,10 @@ public class ConnPostgres {
             if (connLocal != null) {
                 System.out.println("++++++++++++++++Conection a posgrest suceso" + "\n" + PsDriver + "\n" + connectString + "\n" + PsUsuario + "\n" + PsContrasena);
                 if (msj) {
-                    JOptionPane.showMessageDialog(null, "++Conection a posgrest suceso++" + "\n" + PsDriver + "\n" + connectString + "\n" + PsUsuario);
+                    JOptionPane.showMessageDialog(null, "++Conection a Mysql suceso++" + "\n" + PsDriver + "\n" + connectString + "\n" + PsUsuario);
                 }
             }
-            setConnPostgres(connLocal);
+            setConnMySql(connLocal);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "Ocurrio un error en la conexion con base de datos"
@@ -107,7 +109,7 @@ public class ConnPostgres {
 
     public void cerrar_conexion() {
         try {
-            getConnPosgres().close();
+            getConnMySql().close();
             System.out.println("CONEXION CERRADA");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "ERROR AL CERRAR\n" + e);
@@ -121,17 +123,17 @@ public class ConnPostgres {
     /**
      * @return the connPostgres
      */
-    public static Connection getConnPosgres() {
+    public static Connection getConnMySql() {
         System.out.println("CONECTADO " + PsNomBD);
-        return connPostgres;
+        return connMySql;
 
     }
 
     /**
      * @param aConnPostgres the connPostgres to set
      */
-    public static void setConnPostgres(Connection aConnPostgres) {
-        connPostgres = aConnPostgres;
+    public static void setConnMySql(Connection aConnPostgres) {
+        connMySql = aConnPostgres;
     }
 
 }

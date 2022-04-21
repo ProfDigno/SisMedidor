@@ -5,7 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
 import Evento.Combobox.EvenCombobox;
 import Evento.JTextField.EvenJTextField;
@@ -30,7 +30,7 @@ public class FrmEmpresa extends javax.swing.JInternalFrame {
     private DAO_empresa DAO = new DAO_empresa();
   
     EvenJTextField evejtf = new EvenJTextField();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
     cla_color_pelete clacolor= new cla_color_pelete();
     EvenCombobox evecmb = new EvenCombobox();
     private boolean hab_dato_medidor;

@@ -34,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Digno
  */
-public class FrmFacturar extends javax.swing.JInternalFrame {
+public class FrmFacturar1 extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
@@ -50,7 +50,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     private DAO_factura DAOfac = new DAO_factura();
     private BO_factura BOfac = new BO_factura();
     private tarifa entta = new tarifa();
-    cliente ENTcli = new cliente();
+    private cliente entcl = new cliente();
     private int idfactura_ultimo = 0;
     private int fk_iddato_medidor = 0;
     private int fk_idtarifa = 1;
@@ -99,7 +99,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
         txtta_tipo.setText(null);
         jFmonto_tarifa.setText(null);
         fk_idcliente = 0;
-        ENTcli.setC1idcliente_global(fk_idcliente);
+        entcl.setC1idcliente_global(fk_idcliente);
     }
 
     void crear_item_factura() {
@@ -136,7 +136,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     }
 
     boolean validar_item_factura() {
-        fk_idcliente = ENTcli.getC1idcliente_global();
+        fk_idcliente = entcl.getC1idcliente_global();
         if (evejtf.getBoo_JTextField_vacio(txtfec_inicio, "CARGAR FECHA INICIO")) {
             return false;
         }
@@ -186,7 +186,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     }
 
     boolean validar_factura() {
-        fk_idcliente = ENTcli.getC1idcliente_global();
+        fk_idcliente = entcl.getC1idcliente_global();
         if (fk_idcliente == 0) {
             JOptionPane.showMessageDialog(this, "SE DEBE CARGAR UN CLIENTE", "ERROR", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -222,7 +222,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     }
 
     boolean validar_carga_dato_medidor() {
-        fk_idcliente = ENTcli.getC1idcliente_global();
+        fk_idcliente = entcl.getC1idcliente_global();
         if (evejtf.getBoo_JTextField_vacio(txtano, "SE DEBE CARGAR UN ANO")) {
             return false;
         }
@@ -246,8 +246,8 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     }
 
     void cargar_dato_medidor(boolean coninicio) {
-        int dia = ENTcli.getC9dia_fac_global();
-        int fk_iddato_medidor = ENTcli.getC8fk_iddato_medidor_global();
+        int dia = entcl.getC9dia_fac_global();
+        int fk_iddato_medidor = entcl.getC8fk_iddato_medidor_global();
         String titulo = "consulta_dato_medidor";
         int ano = Integer.parseInt(txtano.getText());
         int mes = cmbmes.getSelectedIndex();
@@ -350,7 +350,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
         }
     }
 
-    public FrmFacturar() {
+    public FrmFacturar1() {
         initComponents();
         abrir_formulario();
     }
@@ -691,7 +691,7 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
 
         txtdm_face.setEditable(false);
 
-        jLabel13.setText("FASE:");
+        jLabel13.setText("FACE:");
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("TARIFA"));
 
@@ -976,10 +976,8 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
     private void txtcliente_nombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcliente_nombreKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_F1) {
-            ENTcli.setBusca_factura(true);
             FrmJD_buscarcliente frm = new FrmJD_buscarcliente(null, true);
             frm.setVisible(true);
-            
         }
         if (evt.getKeyCode() == KeyEvent.VK_F2) {
 //            boton_guardar_venta();
@@ -988,10 +986,8 @@ public class FrmFacturar extends javax.swing.JInternalFrame {
 
     private void btnbuscar_clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_clienteActionPerformed
         // TODO add your handling code here:
-        ENTcli.setBusca_factura(true);
         FrmJD_buscarcliente frm = new FrmJD_buscarcliente(null, true);
         frm.setVisible(true);
-        
     }//GEN-LAST:event_btnbuscar_clienteActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

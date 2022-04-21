@@ -6,7 +6,7 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 //import BASEDATO.SERVIDOR.ConnPostgres_SER;
 import Evento.Color.cla_color_pelete;
 import Evento.JTextField.EvenJTextField;
@@ -32,7 +32,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     BO_usuario uBO = new BO_usuario();
     DAO_usuario pdao = new DAO_usuario();
     EvenJTextField evejtf = new EvenJTextField();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
 //    ConnPostgres_SER conPsSER = new ConnPostgres_SER();
 //    Connection connser = conPsSER.getConnPosgres();
     EvenConexion eveconn = new EvenConexion();
@@ -60,22 +60,23 @@ public class JDiaLogin extends javax.swing.JDialog {
         return true;
     }
 
-    private void habilitar_menu(boolean blo, boolean blo2) {
-        FrmMenuMedidor.jMenuFactura.setEnabled(blo);
-        FrmMenuMedidor.jMenuCliente.setEnabled(blo);
-        FrmMenuMedidor.jMenuConfiguracion.setEnabled(blo);
-        FrmMenuMedidor.jMenuMedidor.setEnabled(blo);
-        FrmMenuMedidor.btnfactura.setEnabled(blo);
+    private void habilitar_menu(boolean blo_admin, boolean blo_clie) {
+        FrmMenuMedidor.jMenuFactura.setEnabled(blo_admin);
+        FrmMenuMedidor.jMenuCliente.setEnabled(blo_clie);
+        FrmMenuMedidor.btncliente.setEnabled(blo_clie);
+        FrmMenuMedidor.jMenuConfiguracion.setEnabled(blo_admin);
+        FrmMenuMedidor.jMenuMedidor.setEnabled(blo_admin);
+        FrmMenuMedidor.btnfactura.setEnabled(blo_admin);
     }
 
     void buscar_usuario() {
         if (pdao.getBoolean_buscar_usuario_existente(conn, usu)) {
             JOptionPane.showMessageDialog(this, "BIENVENIDO\n" + usu.getGlobal_nombre());
 //            FrmMenuMonchis.lblusuario.setText(usu.getGlobal_nombre());
-            if (usu.getGlobal_nivel().equals("ADMIN")) {
+            if (usu.getGlobal_nivel().equals(usu.getNivel_admin())) {
                 habilitar_menu(true, true);
             }
-            if (usu.getGlobal_nivel().equals("VENTA")) {
+            if (usu.getGlobal_nivel().equals(usu.getNivel_cliente())) {
                 habilitar_menu(false, true);
             }
             this.dispose();

@@ -73,9 +73,11 @@ public class EvenJasperReport {
 
     }
 
-    public void imprimirPDF(Connection conexion, String sql, String rutatemp, String direccion) {
-//          String rutatemp=""+rutaWord+"\\expPDF.pdf ";
-        String titulo = "imprimirPdf";
+    public void imprimirPDF(Connection conexion, String sql, String direccion, String rutatemp) {
+        String titulo = "imprimirPDF";
+        String carpeta="REPORTE_PDF/";
+        String formato=".pdf";
+        String ruta=carpeta+rutatemp+formato;
         try {
             JasperDesign jasperDesign = JRXmlLoader.load(direccion);
             JRDesignQuery newQuery = new JRDesignQuery();
@@ -83,11 +85,10 @@ public class EvenJasperReport {
             jasperDesign.setQuery(newQuery);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, conexion);
-            JasperExportManager.exportReportToPdfFile(jasperPrint, rutatemp);// exportacion PDF
-            evemen.Imprimir_serial_sql(sql, titulo);
-            abrirArchivo(rutatemp);
+            JasperExportManager.exportReportToPdfFile(jasperPrint,ruta);// exportacion PDF
+            abrirArchivo(ruta);
+            evemen.Imprimir_serial_sql(sql + "\n", titulo);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
         }
 

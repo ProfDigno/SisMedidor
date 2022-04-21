@@ -1,6 +1,6 @@
 package FORMULARIO.BO;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.DAO.DAO_item_consumo_medidor;
 import FORMULARIO.ENTIDAD.item_consumo_medidor;
@@ -15,7 +15,7 @@ public class BO_item_consumo_medidor {
 
     public void insertar_item_consumo_medidor(item_consumo_medidor icm) {
         String titulo = "insertar_item_consumo_medidor";
-        Connection conn = ConnPostgres.getConnPosgres();
+        Connection conn = ConnMySql.getConnMySql();
         try {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
@@ -36,7 +36,7 @@ public class BO_item_consumo_medidor {
     public void update_item_consumo_medidor(item_consumo_medidor icm, JTable tbltabla) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR ITEM_CONSUMO_MEDIDOR", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
             String titulo = "update_item_consumo_medidor";
-            Connection conn = ConnPostgres.getConnPosgres();
+            Connection conn = ConnMySql.getConnMySql();
             try {
                 if (conn.getAutoCommit()) {
                     conn.setAutoCommit(false);

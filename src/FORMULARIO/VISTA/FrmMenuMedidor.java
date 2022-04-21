@@ -6,7 +6,7 @@
 package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import BASEDATO.LOCAL.VariablesBD;
 import Config_JSON.json_config;
 import Evento.Color.cla_color_pelete;
@@ -18,9 +18,15 @@ import FORMULARIO.BO.BO_lectura_temp;
 import FORMULARIO.DAO.DAO_item_consumo_medidor;
 import FORMULARIO.DAO.DAO_lectura_temp;
 import FORMULARIO.ENTIDAD.item_consumo_medidor;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -33,7 +39,7 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
      * Creates new form FrmMenuSainterLab
      */
     Connection conn = null;
-    ConnPostgres conPs = new ConnPostgres();
+    ConnMySql conPs = new ConnMySql();
     VariablesBD var = new VariablesBD();
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenFecha evefec = new EvenFecha();
@@ -49,8 +55,8 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
     private Timer tiempo;
 
     void abrir_formulario() {
-        conPs.ConnectDBpostgres(conn, false, false);
-        conn = conPs.getConnPosgres();
+        conPs.ConnectDBmysql(conn, false, false);
+        conn = conPs.getConnMySql();
         config.cargar_jsom_configuracion();
         titulo_sistema();
         this.setExtendedState(MAXIMIZED_BOTH);
@@ -63,38 +69,55 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
         this.setTitle(titulo);
 
     }
-
-    void consulta_dato_medidor() {
-        String titulo = "consulta_dato_medidor";
-        String sql = "select dm.iddato_medidor, dm.numero_medidor,lt.idlectura_temp,lt.fecha_creado,lt.lectura_kw \n"
-                + "from dato_medidor dm,lectura_temp lt\n"
-                + "where dm.numero_medidor=lt.numero_medidor \n"
-                + "order by lt.idlectura_temp asc;";
-        int cant_insertado = 0;
-        try {
-            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
-            while (rs.next()) {
-                cant_insertado++;
-                int iddato_medidor = rs.getInt("iddato_medidor");
-                String fecha_creado = rs.getString("fecha_creado");
-                int lectura_kw = rs.getInt("lectura_kw");
-                entcm.setC2fecha_creado(fecha_creado);
-                entcm.setC3lectura_kw(lectura_kw);
-                entcm.setC4fk_iddato_medidor(iddato_medidor);
-                BOcm.insertar_item_consumo_medidor(entcm);
-            }
-
-        } catch (Exception e) {
-            evemen.mensaje_error(e, sql, titulo);
+    private void boton_insert_item_consumo_medidor(){
+        if(evemen.MensajeGeneral_warning("ESTAS SEGURO DE INSERTAR TODOS LOS DATOS TEMPORALES","INSERTAR ITEM CONSUMO MEDIDOR","INSERTAR","CANCELAR")){
+            insert_lectura_temp_a_item_consumo_medidor();
         }
-        JOptionPane.showMessageDialog(null, "CANTIDAD DE DATOS INSETADO EN LA TABLA ITEM_CONSUMO_MEDIDOR\nCANTIDAD: " + cant_insertado);
-
+    }
+    void insert_lectura_temp_a_item_consumo_medidor() {
+        String sql = "INSERT INTO item_consumo_medidor (fecha_creado,lectura_kw,fk_iddato_medidor)\n"
+                + "select lt.fecha_creado,lt.lectura_kw,dm.iddato_medidor \n"
+                + "from dato_medidor dm,lectura_temp lt\n"
+                + "where dm.numero_medidor=lt.numero_medidor;\n"
+                + "";
+        eveconn.SQL_execute_libre(conn, sql);
+        JOptionPane.showMessageDialog(null, "DATOS INSETADO EN LA TABLA ITEM_CONSUMO_MEDIDOR ");
+        String sql1="TRUNCATE lectura_temp;";
+        eveconn.SQL_execute_libre(conn, sql1);
+        JOptionPane.showMessageDialog(null, sql1);
     }
 
-    void boton_cargar_item_consumo_medidor() {
-        if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE EJECUTAR ESTE PROCESO DE INSERTAR AUTOMATICAMENTE LOS DATOS TEMPORALES DEL MEDIDOR", "DATOS TEMPORALES", "ACEPTAR", "CANCELAR")) {
-            consulta_dato_medidor();
-            BOlt.truncate_lectura_temp();
+    public static void listFolderStructure(String username, String password,
+            String host, int port, String command) throws Exception {
+
+        Session session = null;
+        ChannelExec channel = null;
+
+        try {
+            session = new JSch().getSession(username, host, port);
+            session.setPassword(password);
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
+
+            channel = (ChannelExec) session.openChannel("exec");
+            channel.setCommand(command);
+            ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+            channel.setOutputStream(responseStream);
+            channel.connect();
+
+//            while (channel.isConnected()) {
+//                Thread.sleep(100);
+//            }
+
+            String responseString = new String(responseStream.toByteArray());
+            System.out.println(responseString);
+        } finally {
+            if (session != null) {
+                session.disconnect();
+            }
+            if (channel != null) {
+                channel.disconnect();
+            }
         }
     }
 
@@ -114,6 +137,7 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
 
         escritorio = new javax.swing.JDesktopPane();
         btnfactura = new javax.swing.JButton();
+        btncliente = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuFactura = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -135,30 +159,50 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
             }
         });
 
+        btnfactura.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/energia.png"))); // NOI18N
         btnfactura.setText("FACTURA");
+        btnfactura.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnfactura.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btnfactura.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnfactura.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnfacturaActionPerformed(evt);
             }
         });
 
+        btncliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/cliente.png"))); // NOI18N
+        btncliente.setText("CLIENTE");
+        btncliente.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btncliente.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btncliente.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btncliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnclienteActionPerformed(evt);
+            }
+        });
+
         escritorio.setLayer(btnfactura, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(btncliente, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
+                .addContainerGap()
                 .addComponent(btnfactura)
-                .addContainerGap(817, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btncliente, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(741, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(btnfactura)
-                .addContainerGap(468, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btncliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnfactura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(417, Short.MAX_VALUE))
         );
 
         jMenuFactura.setText("FACTURA");
@@ -294,7 +338,7 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
         // TODO add your handling code here:
-        boton_cargar_item_consumo_medidor();
+        boton_insert_item_consumo_medidor();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -307,6 +351,11 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
         JDiaLogin log = new JDiaLogin(this, true);
         log.setVisible(true);
     }//GEN-LAST:event_formWindowOpened
+
+    private void btnclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnclienteActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmCliente());
+    }//GEN-LAST:event_btnclienteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -347,6 +396,7 @@ public class FrmMenuMedidor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JButton btncliente;
     public static javax.swing.JButton btnfactura;
     public static javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuBar jMenuBar1;

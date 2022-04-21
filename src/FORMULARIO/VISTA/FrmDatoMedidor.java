@@ -5,7 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
-import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.ConnMySql;
 import Evento.Color.cla_color_pelete;
 import Evento.Combobox.EvenCombobox;
 import Evento.JTextField.EvenJTextField;
@@ -32,7 +32,7 @@ public class FrmDatoMedidor extends javax.swing.JInternalFrame {
     private DAO_tarifa DAOta = new DAO_tarifa();
     EvenJTextField evejtf = new EvenJTextField();
     EvenCombobox evecmb = new EvenCombobox();
-    Connection conn = ConnPostgres.getConnPosgres();
+    Connection conn = ConnMySql.getConnMySql();
     cla_color_pelete clacolor= new cla_color_pelete();
     String face_MONOFACICO="MONOFACICO";
     String face_TRIFACICO="TRIFACICO";
